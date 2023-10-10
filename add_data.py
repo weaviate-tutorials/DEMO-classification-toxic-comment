@@ -20,7 +20,7 @@ client.collection.create(
         wvc.Property(
             name="comment",
             data_type=wvc.DataType.TEXT,
-            descpirtion="The text of the comment"
+            description="The text of the comment"
         ),
         wvc.Property(
             name="label",
