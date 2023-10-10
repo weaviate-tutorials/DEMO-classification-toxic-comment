@@ -34,6 +34,9 @@ we will conduct a semantic search and display the label of the comment that is m
     pip install -r requirements.txt
     ```
 1. Run containerized instance of Weaviate. It also includes vectorizer module to compute the embeddings.
+
+   > **Note**: Make sure you don't have anything occupying port 8080   
+   > If you do, you have the option to either stop that process or change the port that Weaviate is using.
     ```shell
     docker compose up
     ```
