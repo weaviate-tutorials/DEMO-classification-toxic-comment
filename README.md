@@ -23,7 +23,7 @@ we will conduct a semantic search and display the label of the comment that is m
 [Docker Desktop](https://www.docker.com/products/docker-desktop/))
 
 ## Setup instructions 
-1. Clone the project
+1. Clone the repository
 1. Create a virtual environment and activate it
     ```shell
     python3 -m venv venv
