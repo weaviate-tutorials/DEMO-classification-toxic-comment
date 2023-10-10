@@ -25,7 +25,7 @@ client.collection.create(
         wvc.Property(
             name="label",
             data_type=wvc.DataType.TEXT,
-            descpirtion="The label of the comment"
+            description="The label of the comment"
         ),
     ],
     description="comments of people",
