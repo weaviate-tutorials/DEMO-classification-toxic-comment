@@ -1,49 +1,60 @@
-import weaviate
 import pandas as pd
+import weaviate
+import weaviate.classes as wvc
+from weaviate import Config
 
-#setting up client
-client = weaviate.Client("http://localhost:8080")
+COLLECTION_NAME = 'Comments'
+# Set up the client
+client = weaviate.Client("http://localhost:8080",
+                         additional_config=Config(grpc_port_experimental=50051),
+                         )
 
-#Checking if caption schema already exists, then delete it
-current_schemas = client.schema.get()['classes']
-for schema in current_schemas:
-    if schema['class']=='Comments':
-        client.schema.delete_class('Comments')
-#creating the schema
-comment_schema = {
-    "class": "Comments",
-    "description": "comments of people",
-    "properties": [
-        {
-            "name": "comment",
-            "dataType": ["string"],
-            "description": "The text of the comment", 
-        },
-        {
-            "name": "label",
-            "dataType": ["string"],
-            "description": "The label of the comment", 
-        }
-    ]
-}
-client.schema.create_class(comment_schema)
+# If collection already exists, delete it
+if client.collection.exists(COLLECTION_NAME):
+    client.collection.delete(COLLECTION_NAME)
 
-#loading the dataset
-data=pd.read_csv("./train.csv")
+# Create collection
+client.collection.create(
+    name=COLLECTION_NAME,
+    properties=[
+        wvc.Property(
+            name="comment",
+            data_type=wvc.DataType.TEXT,
+            description="The text of the comment"
+        ),
+        wvc.Property(
+            name="label",
+            data_type=wvc.DataType.TEXT,
+            description="The label of the comment"
+        ),
+    ],
+    description="comments of people",
+    vectorizer_config=wvc.ConfigFactory.Vectorizer.text2vec_contextionary(),
+)
 
-#shuffling the datset
-data=data.sample(frac=1)
+# Load the dataset
+data = pd.read_csv("./train.csv")
 
-#adding data to weaviate
-#Adding only 1000 entries, you can increase or decrease the number of entries according to time
-for i in range (0,1000):
-    lab=""
-    if(data.iloc[i][1]==1):
-        lab="toxic"
-    else:
-        lab="Non Toxic"
-    obj = {
-                "comment": str(data.iloc[i][0]),
-                "label": lab
-          }
-    client.data_object.create(obj, "Comments")
+# Shuffle the dataset
+data = data.sample(frac=1)
+
+# Rename the dataframe columns to match the names from collection definition
+data = data.rename(columns={'comment_text': 'comment', 'toxic': 'label'})
+# Turn binary label into text
+data.label = data.label.replace({1: 'Toxic', 0: 'Non Toxic'})
+
+# Fetch CRUD collection object
+comments = client.collection.get(COLLECTION_NAME)
+
+# Prepare objects (only 1000 entries, you can increase or decrease the number of entries)
+objects_to_add = [
+    wvc.DataObject(properties=rec) for rec in data.to_dict(orient='records')[:1000]
+]
+
+response = comments.data.insert_many(objects_to_add)
+
+if response.has_errors:
+    for resp in response.all_responses:
+        print(resp.message)
+else:
+    print("Data added successfully")

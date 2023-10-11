@@ -1,2 +1,3 @@
-pandas==1.2.4
-weaviate_client==3.0.0
+pandas==2.1.1
+weaviate-client @ git+https://github.com/weaviate/weaviate-python-client.git@v3.99.0a3#egg=weaviate-client[GRPC]
+streamlit==1.27.2
