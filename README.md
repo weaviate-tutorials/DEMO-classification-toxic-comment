@@ -66,12 +66,17 @@ To be able to use it you need to enable it in the [docker compose file](docker-c
    ```shell
    streamlit run app.py
    ```
+   
+### Run integration test
+```shell
+./test.sh
+```
 
 ### Shut down
 1. Both streamlit app and docker compose can be stopped with `Ctrl+C` in the corresponding terminal window
-2. To remove created docker containers use
+2. To remove created docker containers and volumes use
 ```shell
-docker compose down
+docker compose down -v
 ```
 
 ## Usage instructions
