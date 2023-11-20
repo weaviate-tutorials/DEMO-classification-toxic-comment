@@ -41,7 +41,7 @@ echo -e "${GREEN}Add data to the index${RESET}"
 venv/bin/python add_data.py
 
 # Run both tests, regardless of the outcome of the first test
-run_test "Test 1: 'you are awesome' is not toxic" "you are awesome" "Non Toxic"
+run_test "Test 1: 'you are amazing' is not toxic" "you are amazing" "Non Toxic"
 run_test "Test 2: 'you are an idiot' is toxic" "you are an idiot" "Toxic"
 
 echo "All tests executed"

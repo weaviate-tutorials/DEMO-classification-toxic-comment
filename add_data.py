@@ -36,7 +36,7 @@ client.collection.create(
 data = pd.read_csv("./train.csv")
 
 # Shuffle the dataset
-data = data.sample(frac=1)
+data = data.sample(frac=1, random_state=42)
 
 # Rename the dataframe columns to match the names from collection definition
 data = data.rename(columns={'comment_text': 'comment', 'toxic': 'label'})
