@@ -9,7 +9,7 @@ services:
     - '8080'
     - --scheme
     - http
-    image: semitechnologies/weaviate:preview-automatically-request-properties-that-are-needed-for-groupby-e98008c
+    image: semitechnologies/weaviate:1.22.4
     restart: on-failure:0
     ports:
      - "8080:8080"
