@@ -1,18 +1,15 @@
 import streamlit as st
 import weaviate
-from weaviate import Config
 
 COLLECTION_NAME = 'Comments'
 # setting up client
-client = weaviate.Client("http://localhost:8080",
-                         additional_config=Config(grpc_port_experimental=50051),
-                         )
+client = weaviate.connect_to_local()
 
 
 # Function to get label for a certain text
 def get_label(text):
     # Fetch CRUD collection object
-    comments = client.collection.get(COLLECTION_NAME)
+    comments = client.collections.get(COLLECTION_NAME)
     response = comments.query.near_text(
         query=text,
         certainty=0.7

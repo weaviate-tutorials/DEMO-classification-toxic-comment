@@ -1,20 +1,17 @@
 import pandas as pd
 import weaviate
 import weaviate.classes as wvc
-from weaviate import Config
 
 COLLECTION_NAME = 'Comments'
 # Set up the client
-client = weaviate.Client("http://localhost:8080",
-                         additional_config=Config(grpc_port_experimental=50051),
-                         )
+client = weaviate.connect_to_local()
 
 # If collection already exists, delete it
-if client.collection.exists(COLLECTION_NAME):
-    client.collection.delete(COLLECTION_NAME)
+if client.collections.exists(COLLECTION_NAME):
+    client.collections.delete(COLLECTION_NAME)
 
 # Create collection
-client.collection.create(
+client.collections.create(
     name=COLLECTION_NAME,
     properties=[
         wvc.Property(
@@ -29,14 +26,14 @@ client.collection.create(
         ),
     ],
     description="comments of people",
-    vectorizer_config=wvc.ConfigFactory.Vectorizer.text2vec_contextionary(),
+    vectorizer_config=wvc.Configure.Vectorizer.text2vec_contextionary(),
 )
 
 # Load the dataset
 data = pd.read_csv("./train.csv")
 
 # Shuffle the dataset
-data = data.sample(frac=1)
+data = data.sample(frac=1, random_state=42)
 
 # Rename the dataframe columns to match the names from collection definition
 data = data.rename(columns={'comment_text': 'comment', 'toxic': 'label'})
@@ -44,7 +41,7 @@ data = data.rename(columns={'comment_text': 'comment', 'toxic': 'label'})
 data.label = data.label.replace({1: 'Toxic', 0: 'Non Toxic'})
 
 # Fetch CRUD collection object
-comments = client.collection.get(COLLECTION_NAME)
+comments = client.collections.get(COLLECTION_NAME)
 
 # Prepare objects (only 1000 entries, you can increase or decrease the number of entries)
 objects_to_add = [
